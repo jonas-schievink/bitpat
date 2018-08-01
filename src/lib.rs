@@ -17,14 +17,23 @@
 /// `1` bits, a `0` token matches `0` bits, and a `_` token matches either one.
 ///
 /// `bitpat!` expands to a closure that takes a value that is then matched
-/// against the specified pattern.
+/// against the specified pattern. The closure always returns a `bool`
+/// indicating whether the value matched, but its argument can be inferred to be
+/// any integer type.
 ///
 /// If a `bitpat!` is matched against a value that consists of more bits than
 /// were specified in the pattern, the pattern is applied to the *least
 /// significant* bits in the value and other bits are ignored. In other words,
 /// the pattern is padded with `_` symbols.
 ///
+/// Likewise, if the pattern is applied to a value with fewer bits than in the
+/// pattern, the pattern will be *truncated* to match against the value. But do
+/// note that type inference might infer a larger integer type than you expect,
+/// so what seem to be excess bits in the pattern might get matched normally.
+///
 /// # Example
+///
+/// Basic usage:
 ///
 /// ```
 /// #[macro_use] extern crate bitpat;
@@ -79,4 +88,63 @@ macro_rules! bitpat {
 
     // Entry point
     ( $($part:tt)+ ) => {bitpat!(@build 0 0 [$($part)+])};
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn mask() {
+        assert!(bitpat!(0 0 _ _ 1 _ _ _)(0b00111111));
+        assert!(bitpat!(0 0 _ _ 1 _ _ _)(0b00001111));
+        assert!(bitpat!(0 0 _ _ 1 _ _ _)(0b00001000));
+        assert!(bitpat!(0 0 _ _ 1 _ _ _)(0b00001110));
+        assert!(!bitpat!(0 0 _ _ 1 _ _ _)(0b01111111));
+        assert!(!bitpat!(0 0 _ _ 1 _ _ _)(0b10111111));
+        assert!(!bitpat!(0 0 _ _ 1 _ _ _)(0b00110111));
+        for b in 0..=255u8 {
+            assert_eq!(bitpat!(1 _ _ _ _ _ _ _)(b), b >= 128);
+            assert_eq!(bitpat!(0 _ _ _ _ _ _ _)(b), b < 128);
+        }
+        for b in 0..=255u8 {
+            assert_eq!(bitpat!(_ _ _ _ _ _ _ 1)(b), b & 1 != 0);
+            assert_eq!(bitpat!(_ _ _ _ _ _ _ 0)(b), b & 1 == 0);
+        }
+        for b in 0..=255u8 {
+            assert!(bitpat!(_ _ _ _ _ _ _ _)(b));
+        }
+        for b in 1..=255u8 {
+            assert!(!bitpat!(0 0 0 0 0 0 0 0)(b));
+        }
+    }
+
+    #[test]
+    fn mask_too_short() {
+        assert!(bitpat!(_ _ _ _)(0b11110000));
+        assert!(bitpat!(_ _ _ _)(0b11111111));
+        assert!(bitpat!(_ _ _ _)(0b11110001));
+        assert!(bitpat!(_ _ _ _)(0b0000));
+
+        assert!(bitpat!(0 0 0 0)(0b11110000));
+        assert!(bitpat!(0 0 0 0)(0b1110000));
+        assert!(bitpat!(0 0 0 0)(0b110000));
+        assert!(bitpat!(0 0 0 0)(0b10000));
+        assert!(bitpat!(0 0 0 0)(0b0000));
+
+        assert!(bitpat!(1 1 1 1)(0b11111111));
+        assert!(bitpat!(1 1 1 1)(0b1111111));
+        assert!(bitpat!(1 1 1 1)(0b111111));
+        assert!(bitpat!(1 1 1 1)(0b11111));
+        assert!(bitpat!(1 1 1 1)(0b1111));
+    }
+
+    #[test]
+    fn mask_too_long() {
+        assert!(bitpat!(_   _ _ _ _ _ _ _ _)(0b11110000u8));
+        assert!(bitpat!(0   _ _ _ _ _ _ _ _)(0b11110000u8));
+        assert!(bitpat!(1   _ _ _ _ _ _ _ _)(0b11110000u8));
+        assert!(bitpat!(1   1 _ _ _ _ _ _ _)(0b11110000u8));
+        assert!(bitpat!(0   1 _ _ _ _ _ _ _)(0b11110000u8));
+        assert!(bitpat!(1   0 _ _ _ _ _ _ _)(0b01110000u8));
+        assert!(bitpat!(0   0 _ _ _ _ _ _ _)(0b01110000u8));
+    }
 }
