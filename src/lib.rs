@@ -101,18 +101,18 @@ mod tests {
         assert!(!bitpat!(0 0 _ _ 1 _ _ _)(0b01111111));
         assert!(!bitpat!(0 0 _ _ 1 _ _ _)(0b10111111));
         assert!(!bitpat!(0 0 _ _ 1 _ _ _)(0b00110111));
-        for b in 0..=255u8 {
+        for b in 0..255u8 {
             assert_eq!(bitpat!(1 _ _ _ _ _ _ _)(b), b >= 128);
             assert_eq!(bitpat!(0 _ _ _ _ _ _ _)(b), b < 128);
         }
-        for b in 0..=255u8 {
+        for b in 0..255u8 {
             assert_eq!(bitpat!(_ _ _ _ _ _ _ 1)(b), b & 1 != 0);
             assert_eq!(bitpat!(_ _ _ _ _ _ _ 0)(b), b & 1 == 0);
         }
-        for b in 0..=255u8 {
+        for b in 0..255u8 {
             assert!(bitpat!(_ _ _ _ _ _ _ _)(b));
         }
-        for b in 1..=255u8 {
+        for b in 1..255u8 {
             assert!(!bitpat!(0 0 0 0 0 0 0 0)(b));
         }
     }
