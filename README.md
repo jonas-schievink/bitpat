@@ -4,7 +4,7 @@
 [![docs.rs](https://docs.rs/bitpat/badge.svg)](https://docs.rs/bitpat/)
 [![Build Status](https://travis-ci.org/jonas-schievink/bitpat.svg?branch=master)](https://travis-ci.org/jonas-schievink/bitpat)
 
-This crate provides the `bitpat!` macro, which can match a value against a bit
+This crate provides the [`bitpat!`] macro, which can match a value against a bit
 pattern. This is useful, for example, for low-level code that inspects
 individual bits in data such as registers or machine instructions.
 
@@ -23,5 +23,8 @@ bitpat = "0.1.0"
 Then import the crate into your Rust code:
 
 ```rust
-extern crate bitpat;
+#[macro_use] extern crate bitpat;
 ```
+
+
+[`bitpat!`]: https://docs.rs/bitpat/latest/bitpat/macro.bitpat.html
