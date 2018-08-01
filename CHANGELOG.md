@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-No changes.
+* Enhanced test suite
+* Better documentation of edge cases
 
 ## 0.1.0
 
