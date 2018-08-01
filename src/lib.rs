@@ -4,7 +4,7 @@
 //!
 //! [`bitpat!`]: macro.bitpat.html
 
-#![doc(html_root_url = "https://docs.rs/bitpat/0.1.0")]
+#![doc(html_root_url = "https://docs.rs/bitpat/0.1.1")]
 #![warn(missing_debug_implementations)]
 #![warn(missing_docs)]
 
