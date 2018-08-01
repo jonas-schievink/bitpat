@@ -29,6 +29,7 @@
 /// ```
 /// #[macro_use] extern crate bitpat;
 ///
+/// # fn main() {
 /// // `0` patterns must always be 0, while `_` patterns don't matter.
 /// assert!( bitpat!(0 0 0 0 _ _ _ _)(0b00000000u8));
 /// assert!( bitpat!(0 0 0 0 _ _ _ _)(0b00001111u8));
@@ -51,6 +52,7 @@
 /// assert!(!bitpat!(1 1 1 _ _ 0 0 0)(0b11111100u8));
 /// assert!(!bitpat!(1 1 1 _ _ 0 0 0)(0b00001111u8));
 /// assert!(!bitpat!(1 1 1 _ _ 0 0 0)(0b11000000u8));
+/// # }
 /// ```
 #[macro_export]
 macro_rules! bitpat {
