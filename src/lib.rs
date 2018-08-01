@@ -146,5 +146,10 @@ mod tests {
         assert!(bitpat!(0   1 _ _ _ _ _ _ _)(0b11110000u8));
         assert!(bitpat!(1   0 _ _ _ _ _ _ _)(0b01110000u8));
         assert!(bitpat!(0   0 _ _ _ _ _ _ _)(0b01110000u8));
+
+        // these are matching against i32
+        assert!(!bitpat!(1   1 _ _ _ _ _ _ _)(0b11110000));
+        assert!( bitpat!(0   1 _ _ _ _ _ _ _)(0b11110000));
+        assert!( bitpat!(_   1 _ _ _ _ _ _ _)(0b11110000));
     }
 }
